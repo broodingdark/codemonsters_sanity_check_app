@@ -25,3 +25,11 @@ VOID_SUCCESS_RESPONSE_DATA = CONFIG["expected_responses"]["void_transaction_succ
 SALE_ERROR_RESPONSE_DATA = CONFIG["expected_responses"]["sale_transaction_error"]
 VOID_ERROR_RESPONSE_DATA = CONFIG["expected_responses"]["void_transaction_error"]
 COMPLETE_PAYMENT_TRANSACTIONS_ENDPOINT = ROOT + PAYMENT_TRANSACTIONS_ENDPOINT
+
+
+def setup_module(module):
+    print("Sanity Suite started!")
+
+
+def teardown_module(module):
+    return Path(CONFIG_NAME).unlink()
