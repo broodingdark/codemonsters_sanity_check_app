@@ -65,3 +65,84 @@ def send_and_validate_transaction(endpoint, data, username, password, expected_c
         assert processed_response == expected_data
 
     return processed_response
+
+
+def test_sale_transaction_success():
+    send_and_validate_transaction(COMPLETE_PAYMENT_TRANSACTIONS_ENDPOINT,
+                                  SALE_REQUEST_DATA,
+                                  USERNAME,
+                                  PASSWORD,
+                                  SALE_SUCCESS_RESPONSE_DATA["response_code"],
+                                  SALE_SUCCESS_RESPONSE_DATA["response_data"]
+                                  )
+
+
+def test_void_transaction_success():
+    response = send_and_validate_transaction(COMPLETE_PAYMENT_TRANSACTIONS_ENDPOINT,
+                                             SALE_REQUEST_DATA,
+                                             USERNAME,
+                                             PASSWORD,
+                                             SALE_SUCCESS_RESPONSE_DATA["response_code"],
+                                             SALE_SUCCESS_RESPONSE_DATA["response_data"]
+                                             )
+    void_data = VOID_REQUEST_DATA.copy()
+    void_data["payment_transaction"]["reference_id"] = response["unique_id"]
+
+    send_and_validate_transaction(COMPLETE_PAYMENT_TRANSACTIONS_ENDPOINT,
+                                  void_data,
+                                  USERNAME,
+                                  PASSWORD,
+                                  VOID_SUCCESS_RESPONSE_DATA["response_code"],
+                                  VOID_SUCCESS_RESPONSE_DATA["response_data"]
+                                  )
+
+
+def test_sale_transaction_invalid_authentication():
+    send_and_validate_transaction(COMPLETE_PAYMENT_TRANSACTIONS_ENDPOINT,
+                                  SALE_REQUEST_DATA,
+                                          "invalid_username",
+                                          "invalid_password",
+                                  401,
+                                          "HTTP Basic: Access denied."
+                                  )
+
+
+def test_void_transaction_non_existent_sale():
+    send_and_validate_transaction(COMPLETE_PAYMENT_TRANSACTIONS_ENDPOINT,
+                                  VOID_REQUEST_DATA,
+                                  USERNAME,
+                                  PASSWORD,
+                                  VOID_ERROR_RESPONSE_DATA["response_code"],
+                                  VOID_ERROR_RESPONSE_DATA["response_data"]
+                                  )
+
+
+def test_void_transaction_to_void_transaction():
+    sale_response = send_and_validate_transaction(COMPLETE_PAYMENT_TRANSACTIONS_ENDPOINT,
+                                                  SALE_REQUEST_DATA,
+                                                  USERNAME,
+                                                  PASSWORD,
+                                                  SALE_SUCCESS_RESPONSE_DATA["response_code"],
+                                                  SALE_SUCCESS_RESPONSE_DATA["response_data"]
+                                                  )
+    void_data = VOID_REQUEST_DATA.copy()
+    void_data["payment_transaction"]["reference_id"] = sale_response["unique_id"]
+
+    void_response = send_and_validate_transaction(COMPLETE_PAYMENT_TRANSACTIONS_ENDPOINT,
+                                                  void_data,
+                                                  USERNAME,
+                                                  PASSWORD,
+                                                  VOID_SUCCESS_RESPONSE_DATA["response_code"],
+                                                  VOID_SUCCESS_RESPONSE_DATA["response_data"]
+                                                  )
+
+    void_data = VOID_REQUEST_DATA.copy()
+    void_data["payment_transaction"]["reference_id"] = void_response["unique_id"]
+
+    send_and_validate_transaction(COMPLETE_PAYMENT_TRANSACTIONS_ENDPOINT,
+                                  void_data,
+                                  USERNAME,
+                                  PASSWORD,
+                                  VOID_ERROR_RESPONSE_DATA["response_code"],
+                                  VOID_ERROR_RESPONSE_DATA["response_data"]
+                                  )
