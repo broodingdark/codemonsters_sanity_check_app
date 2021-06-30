@@ -1,9 +1,15 @@
 import sys
 import json
+import pytest
 import argparse
+from shutil import copy
 from pathlib import Path
 
+
 __version__ = "1.0"
+DEFAULT_CONFIG_PATH_FROM = "config.json"
+DEFAULT_CONFIG_PATH_TO = "checks/config.json"
+SUITE_LOCATION = "checks/suite.py"
 CONFIG_ERROR_MESSAGE = "Invalid config! Please use the default one for reference!"
 
 
@@ -45,8 +51,25 @@ def validate_config(conf_path) -> dict:
     return config
 
 
+def run_suite():
+    """
+    Run sanity check suite
+    """
+    pytest.main(["-q", "-s", str(Path(SUITE_LOCATION).resolve())])
+
+
 def main(args):
-    pass
+    if not args.config:
+        conf_path = DEFAULT_CONFIG_PATH_FROM
+    else:
+        conf_path = args.config
+
+    if args.validate:
+        validate_config(conf_path)
+    if args.suite:
+        validate_config(conf_path)
+        copy(Path(conf_path).resolve(), Path(DEFAULT_CONFIG_PATH_TO).resolve())
+        run_suite()
 
 
 if __name__ == "__main__":
