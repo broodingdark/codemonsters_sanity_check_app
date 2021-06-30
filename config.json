@@ -1,0 +1,72 @@
+{
+  "credentials": {
+    "username": "codemonster",
+    "password": "my5ecret-key2o2o"
+  },
+  "endpoints": {
+    "root": "http://localhost:3001",
+    "payment_transactions": "/payment_transactions"
+  },
+  "test_data": {
+    "valid_sale_transaction": {
+      "payment_transaction": {
+        "card_number": "4200000000000000",
+        "cvv": "123",
+        "expiration_date": "06/2019",
+        "amount": "500",
+        "usage": "Coffeemaker",
+        "transaction_type": "sale",
+        "card_holder": "Panda Panda",
+        "email": "panda@example.com",
+        "address": "Panda Street, China"
+      }
+    },
+    "valid_void_transaction": {
+      "payment_transaction": {
+        "reference_id": "0e08644635ccb520c2eeb54f33865660",
+        "transaction_type": "void"
+      }
+    }
+  },
+  "expected_responses": {
+    "sale_transaction_success": {
+      "response_code": 200,
+      "response_data": {
+        "unique_id": "0e08644635ccb520c2eeb54f33865660",
+        "status": "approved",
+        "usage": "Coffeemaker",
+        "amount": 500,
+        "transaction_time": "2016-11-11T15:32:01.368Z",
+        "message": "Your transaction has been approved."
+      }
+    },
+    "void_transaction_success": {
+      "response_code": 200,
+      "response_data": {
+        "unique_id": "7e59f0116b74d62e3980ee0231b02dc4",
+        "status": "approved",
+        "usage": "Coffeemaker",
+        "amount": 500,
+        "transaction_time": "2016-11-11T15:25:38.817Z",
+        "message": "Your transaction has been voided successfully"
+      }
+    },
+    "sale_transaction_error": {
+      "response_code": 200,
+      "response_data": {
+        "unique_id": "2f256d59ce3472459704dc43040f0788",
+        "status": "declined",
+        "usage": "Coffeemaker",
+        "amount": 500,
+        "transaction_time": "2016-11-11T15:32:34.913Z",
+        "message": "Your transaction has been declined!"
+      }
+    },
+    "void_transaction_error": {
+      "response_code": 422,
+      "response_data": {
+        "reference_id": ["Invalid reference transaction!"]
+      }
+    }
+  }
+}
